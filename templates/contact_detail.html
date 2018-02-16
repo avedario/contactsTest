@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Запись</h1>
+    <ul>
+        <li>Id: {{ contact.id }}</li>
+        <li>Name: {{ contact.name }}</li>
+        <li>Company: {{ contact.company }}</li>
+        <li>Email: {{ contact.email }}</li>
+        <li>Phone: {{ contact.phone }}</li>
+        <li>Interest: {{ contact.interest }}</li>
+    </ul>
+    <a href="{% url 'contacts_list' %}" class="btn btn-default">Отмена</a>
+{% endblock %}

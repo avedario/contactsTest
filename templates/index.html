@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Контакты</h1>
+    <p><a class="btn btn-primary" href="{% url 'contact_new' %}" role="button">Добавить</a></p>
+    <form action="" method="GET">
+        <div class="form-group row">
+            <div class="col-sm-6">
+                <input type="text" class="form-control" name="query" value="" placeholder="Поиск по имени или компании" />
+                {{ form.as_p }}
+            </div>
+            <div class="col-sm-6">
+                <button type="submit" class="btn btn-primary">Поиск</button>
+            </div>
+        </div>
+    </form>
+
+    {% if contacts %}
+        <table class="table">
+            <thead>
+                <th>Name</th>
+                <th>Company</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Interest</th>
+                <th></th>
+                <th></th>
+                <th></th>
+            </thead>
+            <tbody>
+                {% for contact in contacts %}
+                    <tr>
+                        <td>{{ contact.name }}</td>
+                        <td>{{ contact.company }}</td>
+                        <td>{{ contact.email }}</td>
+                        <td>{{ contact.phone }}</td>
+                        <td>{{ contact.interest }}</td>
+                        <td><a class="btn btn-primary" href="{{ contact.get_absolute_url }}" role="button">просмотр</a></td>
+                        <td><a class="btn btn-primary" href="{% url 'contact_edit' contact.id %}" role="button">редактирование</a></td>
+                        <td><a class="btn btn-primary" href="{% url 'contact_delete' contact.id %}" role="button">удаление</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if is_paginated %}
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                    <li>
+                        <span><a href="?page={{ page_obj.previous_page_number }}">Сюда</a></span>
+                    </li>
+                {% endif %}
+                    <li>
+                        <span>{{ page_obj.number }}</span>
+                    </li>
+                {% if page_obj.has_next %}
+                    <li>
+                        <span><a href="?page={{ page_obj.next_page_number }}">Туда</a></span>
+                    </li>
+                {% endif %}
+            </ul>
+        {% endif %}
+    {% else %}
+        <p>Нет контактов</p>
+    {% endif %}
+{% endblock %}

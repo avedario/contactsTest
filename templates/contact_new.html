@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Создать новый контакт</h1>
+    <form method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            {% for error in field.errors %}
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p class="text-danger">{{ error }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+            <div class="form-group row">
+                <div class="col-sm-1">
+                    {{ field.label_tag }}
+                </div>
+                <div class="col-sm-6">
+                    {{ field }}
+                </div>
+            </div>
+        {% endfor %}
+        <div class="form-group row">
+            <div class="col-sm-6">
+                <a href="{% url 'contacts_list' %}" class="btn btn-default">Отмена</a>
+                <button type="submit" class="btn btn-primary">Создать</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

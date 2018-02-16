@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Удаление</h1>
+    <form method="post">{% csrf_token %}
+        <p>Вы действительно хотите удалить запись?</p>
+        <a href="{% url 'contacts_list' %}" class="btn btn-default">Отмена</a>
+        <button type="submit" class="btn btn-primary">Удалить</button>
+    </form>
+{% endblock %}
