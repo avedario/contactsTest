@@ -4,11 +4,11 @@ from django.core.validators import RegexValidator
 
 
 class Contact(models.Model):
-    phone_validator = RegexValidator('^\+?1?\d{9,15}$', "Invalid phone number")
+    phone_validator = RegexValidator('^\+?1?\d{9,15}$', "Некорректный телефонный номер")
 
     name = models.CharField(max_length=255)
     company = models.CharField(max_length=255)
-    email = models.CharField(
+    email = models.EmailField(
         max_length=100,
         unique=True
     )

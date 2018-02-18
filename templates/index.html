@@ -2,12 +2,26 @@
 
 {% block content %}
     <h1>Контакты</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="alert alert-success">{{ message }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    {% for item in worth_list %}
+        <p>{{ item }}</p>
+    {% endfor %}
+    
     <p><a class="btn btn-primary" href="{% url 'contact_new' %}" role="button">Добавить</a></p>
     <form action="" method="GET">
         <div class="form-group row">
             <div class="col-sm-6">
-                <input type="text" class="form-control" name="query" value="" placeholder="Поиск по имени или компании" />
-                {{ form.as_p }}
+                {{ form.query }}
             </div>
             <div class="col-sm-6">
                 <button type="submit" class="btn btn-primary">Поиск</button>
@@ -62,4 +76,10 @@
     {% else %}
         <p>Нет контактов</p>
     {% endif %}
+    
+    <div>
+        <a href="{% url 'export_data' %}" class="btn btn-primary">Экспорт</a>
+        <a href="{% url 'import_data' %}" class="btn btn-primary">Импорт</a>
+        <a href="{% url 'external_import' %}" class="btn btn-primary">Импорт из стороннего сервиса</a>
+    </div>
 {% endblock %}

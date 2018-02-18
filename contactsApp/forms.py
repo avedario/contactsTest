@@ -3,6 +3,7 @@ from .models import Contact
 
 
 class ContactForm(forms.ModelForm):
+
     def __init__(self, *args, **kwargs):
         super(ContactForm, self).__init__(*args, **kwargs)
         for field in self.fields:
@@ -30,9 +31,19 @@ class ContactForm(forms.ModelForm):
 class SearchForm(forms.Form):
 
     query = forms.CharField(
-        required=True,
-        widget=forms.TextInput(attrs={'placeholder': 'Search by name or company'})
+        widget=forms.TextInput(attrs={'class': 'form-control'})
     )
 
     class Meta:
         fields = ('query',)
+
+
+class ImportForm(forms.Form):
+
+    file = forms.FileField(
+        required=True,
+        widget=forms.FileInput(attrs={'accept': ".json"})
+    )
+
+    class Meta:
+        fields = ('file',)
