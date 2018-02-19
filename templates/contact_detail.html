@@ -4,6 +4,7 @@
     <h1>Запись</h1>
     <ul>
         <li>Id: {{ contact.id }}</li>
+        <li>ExternalID: {{ contact.externalID|default_if_none:"" }}</li>
         <li>Name: {{ contact.name }}</li>
         <li>Company: {{ contact.company }}</li>
         <li>Email: {{ contact.email }}</li>

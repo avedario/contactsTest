@@ -1,11 +1,11 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.core.urlresolvers import reverse_lazy
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.db.models import Q
 from .models import Contact
 from .forms import ContactForm, SearchForm, ImportForm
-from django.views.generic import View, ListView, FormView
+from django.views.generic import View, ListView, FormView, RedirectView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 import requests
@@ -15,6 +15,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 import json
 from django.db import IntegrityError
 from django.core.exceptions import ValidationError
+import re
 
 
 def html_parser():
@@ -82,6 +83,10 @@ class ContactDelete(SuccessMessageMixin, DeleteView):
     success_url = reverse_lazy('contacts_list')
     success_message = "Запись удалена"
 
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, self.success_message)
+        return super(ContactDelete, self).delete(request, *args, **kwargs)
+
 
 class ExportData(View):
 
@@ -94,25 +99,6 @@ class ExportData(View):
         response = HttpResponse(data, content_type='application/json')
         response['Content-Disposition'] = 'attachment; filename="export.json"'
         return response
-        # return self.render_to_json(data)
-
-
-# class ImportFromJSONMixin(object):
-
-#     def validate_instance(self, data, form):
-#         contact = Contact(
-#             name=data['name'],
-#             company=data['company'],
-#             email=data['email'],
-#             phone=data['phone'],
-#             interest=data['interest'],
-#         )
-#         try:
-#             contact.full_clean()
-#         except ValidationError as e:
-#             messages.error(self.request, e)
-#             return self.form_invalid(form)
-#         return contact
 
 
 class ImportData(SuccessMessageMixin, FormView):
@@ -148,20 +134,29 @@ class ImportData(SuccessMessageMixin, FormView):
             items.append(contact)
 
         Contact.objects.bulk_create(items)
-        # try:
-        #     Contact.objects.bulk_create(items)
-        # except IntegrityError:
-        #     for item in items:
-        #         try:
-        #             item.save()
-        #         except IntegrityError:
-        #             continue
         return super(ImportData, self).form_valid(form)
 
 
-class ExternalImport(View):
+class ExternalImport(SuccessMessageMixin, RedirectView):
+    success_message = "Импорт прошел успешно"
+    url = reverse_lazy('contacts_list')
+
     def get(self, request, *args, **kwargs):
         url = 'https://jsonplaceholder.typicode.com/users'
-        json = requests.get(url, verify=False)
-        # data = json.loads(json)
-        print(json)
+        r = requests.get(url, verify=False)
+        data = json.loads(r.content.decode('utf8'))
+
+        items = []
+        for item in data:
+            contact, created = Contact.objects.update_or_create(
+                externalID=item['id'],
+                defaults={
+                    'name': item['name'],
+                    'company': item['company']['name'],
+                    'email': item['email'],
+                    'phone': re.sub("[^0-9x]", "", item['phone'])
+                }
+            )
+            contact.save()
+        messages.success(self.request, self.success_message)
+        return super(ExternalImport, self).get(self, request, *args, **kwargs)

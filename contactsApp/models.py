@@ -17,6 +17,7 @@ class Contact(models.Model):
         validators=[phone_validator]
     )
     interest = models.CharField(max_length=255)
+    externalID = models.IntegerField(blank=True, null=True)
 
     def get_absolute_url(self):
         return reverse('contact_detail', kwargs={'pk': self.pk})
