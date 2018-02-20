@@ -13,13 +13,15 @@ from bs4 import BeautifulSoup
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 import json
-from django.db import IntegrityError
 from django.core.exceptions import ValidationError
 import re
 
 
 def html_parser():
-    # Html parser
+    '''
+    Парсим заголовки ценностей с классом .content-section__itemtitle в блоке
+    .content-section worth
+    '''
     worth_list = []
     url = 'http://breffi.ru/ru/about'
     r = requests.get(url, verify=False)
@@ -37,6 +39,7 @@ class Contacts(ListView):
     context_object_name = 'contacts'
     paginate_by = 10
 
+    # Если что-то ввели в поиск, включаем поиск по имени и компании
     def get_queryset(self):
         form = self.form_class(self.request.GET)
         if form.is_valid():
@@ -132,7 +135,11 @@ class ImportData(SuccessMessageMixin, FormView):
                 return self.form_invalid(form)
 
             items.append(contact)
-
+        '''
+        Импорт из файла в данном случае не предполагает обновления уже
+        существующих записей, на повторяющихся email выкидывает ошибку.
+        Поэтому тут bulk_create, который не нуждается в проверке на IntegrityError
+        '''
         Contact.objects.bulk_create(items)
         return super(ImportData, self).form_valid(form)
 

@@ -77,9 +77,9 @@
         <p>Нет контактов</p>
     {% endif %}
     
-    <div>
+    <p>
         <a href="{% url 'export_data' %}" class="btn btn-primary">Экспорт</a>
         <a href="{% url 'import_data' %}" class="btn btn-primary">Импорт</a>
         <a href="{% url 'external_import' %}" class="btn btn-primary">Импорт из стороннего сервиса</a>
-    </div>
+    </p>
 {% endblock %}
